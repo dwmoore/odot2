@@ -2,16 +2,25 @@ require 'spec_helper'
 
 describe "Creating todo lists" do
 
-	it "Redirects to the todo list index page on success" do
-		
+	def create_todo_list(options={})
+
+		options[:title] ||= "My todo list title"
+		options[:description] ||= "My todo list description"
+		options[:button] ||= "Create Todo list"
+
 		visit "/todo_lists"
 		click_link "New Todo list"
 
 		expect(page).to have_content("New todo_list")
 
-		fill_in "Title", with: "My todo list"
-		fill_in "Description", with: "This is what I'm doing today."
-		click_button "Create Todo list"
+		fill_in "Title", with: options[:title]
+		fill_in "Description", with: options[:description]
+		click_button options[:button]
+	end
+
+	it "Redirects to the todo list index page on success" do
+		
+		create_todo_list
 
 		expect(page).to have_content "My todo list"
 
@@ -21,20 +30,13 @@ describe "Creating todo lists" do
 
 		expect(TodoList.count).to eq(0)
 
-		visit "/todo_lists"
-		click_link "New Todo list"
-
-		expect(page).to have_content("New todo_list")
-
-		fill_in "Title", with: ""
-		fill_in "Description", with: "This is what I'm doing today."
-		click_button "Create Todo list"
+		create_todo_list title: ""
 
 		expect(page).to have_content("error")
 		expect(TodoList.count).to eq(0)
 
 		visit "/todo_lists"
-		expect(page).to_not have_content("This is what I'm doing today.")
+		expect(page).to_not have_content("My todo list description")
 
 	end
 
@@ -42,20 +44,13 @@ describe "Creating todo lists" do
 
 		expect(TodoList.count).to eq(0)
 
-		visit "/todo_lists"
-		click_link "New Todo list"
-
-		expect(page).to have_content("New todo_list")
-
-		fill_in "Title", with: "Hi"
-		fill_in "Description", with: "This is what I'm doing today."
-		click_button "Create Todo list"
+		create_todo_list title: "hi"
 
 		expect(page).to have_content("error")
 		expect(TodoList.count).to eq(0)
 
 		visit "/todo_lists"
-		expect(page).to_not have_content("This is what I'm doing today.")
+		expect(page).to_not have_content("My todo list description")
 
 	end
 
@@ -63,20 +58,13 @@ describe "Creating todo lists" do
 
 		expect(TodoList.count).to eq(0)
 
-		visit "/todo_lists"
-		click_link "New Todo list"
-
-		expect(page).to have_content("New todo_list")
-
-		fill_in "Title", with: "Hello"
-		fill_in "Description", with: ""
-		click_button "Create Todo list"
+		create_todo_list description: ""
 
 		expect(page).to have_content("error")
 		expect(TodoList.count).to eq(0)
 
 		visit "/todo_lists"
-		expect(page).to_not have_content("Hello")
+		expect(page).to_not have_content("My todo list title")
 
 	end
 
@@ -84,20 +72,13 @@ describe "Creating todo lists" do
 
 		expect(TodoList.count).to eq(0)
 
-		visit "/todo_lists"
-		click_link "New Todo list"
-
-		expect(page).to have_content("New todo_list")
-
-		fill_in "Title", with: "Hello"
-		fill_in "Description", with: "one"
-		click_button "Create Todo list"
+		create_todo_list description: "one"
 
 		expect(page).to have_content("error")
 		expect(TodoList.count).to eq(0)
 
 		visit "/todo_lists"
-		expect(page).to_not have_content("Hello")
+		expect(page).to_not have_content("My todo list title")
 
 	end
 end
